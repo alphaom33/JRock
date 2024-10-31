@@ -1,0 +1,164 @@
+quote says "
+newline is "
+"
+
+input says {"a": -1237.11e-1
+binput says , "b": "csdf"}
+input is with newline
+input is with binput
+print input
+
+split input into charArray
+
+what is charArray
+
+why takes other giving input at index is totally other
+
+consume takes toTake
+	if not why taking toTake
+		print "Expected " + toTake
+		index is with 1
+		give back false
+	end
+	index is with 1
+	give back true
+end
+
+eat takes toTake
+	while consume taking toTake
+		print ""
+	end
+	print "That was a fake expected don't worry about it"
+	index is with -1
+	give nothing back
+end
+
+eatWhite takes nothing
+	let tmp be input at index
+	while tmp is " " or tmp is newLine
+		index is with 1
+		let tmp be input at index
+	end
+end
+
+parseString takes nothing
+	consume taking quote
+	let start be index
+	while not why taking quote
+		index is with 1
+	end
+	out is ""
+	while start < index
+		out is with input at start
+		start is with 1
+	end
+	give out back
+end
+
+contains takes array, thing
+	split array into ohmy
+	jndex is 0
+	let len be ohmy + 0
+	while jndex < len
+		if ohmy at jndex is thing
+			give true back
+		end
+		jndex is with 1
+	end
+	false
+end
+
+isNumber takes thing
+	numbers is "1234567890.-"
+	contains taking numbers, thing
+end
+
+pow takes first, second
+	out is 1
+	while second > 0
+		let out be out * first
+		second is with -1
+	end
+	while second < 0
+		let out be out / first
+		second is with 1
+	end
+	out
+end
+
+parseNumber takes nothing
+	if input at index is "-"
+		let isNegative be true
+		index is with 1
+	end
+	let iPart be ""
+	while not why taking "." and isNumber taking input at index
+		iPart is with input at index
+		index is with 1
+	end
+	if input at index is "."
+		consume taking "."
+		let fPart be ""
+		while isNumber taking input at index
+			fPart is with input at index
+			index is with 1
+		end
+	end
+	if input at index is "e" or input at index is "E"
+		index is with 1
+		if input at index is "+"
+			consume taking "+"
+		end
+		if input at index is "-"
+			let powNegative be true
+			consume taking "-"
+		end
+		let powPart be ""
+		while isNumber taking input at index
+			powPart is with input at index
+			index is with 1
+		end
+	end
+	number is 0
+	if iPart
+		cast iPart with 10
+		number is with iPart
+	end
+	if fPart
+		split fPart into ack
+		let len be pow taking 10, ack + 0
+		cast fPart with 10
+		let fPart be fPart / len
+		number is with fPart
+	end
+	if powPart
+		cast powPart with 10
+		if powNegative
+			let powPart be powPart * -1
+		end
+		print powPart
+		let multiplier be pow taking 10, powPart
+		let number be number * multiplier
+	end
+	if isNegative
+		let number be number * -1
+	end
+	number
+end
+
+index is 0
+basics says {}:,
+while index < charArray
+	if contains taking basics, input at index
+		rock tokens with input at index
+	end
+	if input at index is quote
+		rock tokens with parseString taking ""
+	end
+	if isNumber taking input at index
+		rock tokens with parseNumber taking ""
+	end
+	index is with 1
+end
+
+print tokens
