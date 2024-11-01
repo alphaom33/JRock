@@ -2,10 +2,7 @@ quote says "
 newline is "
 "
 
-input says {"a": -1237.11e-1
-binput says , "b": "csdf"}
-input is with newline
-input is with binput
+input says {"a": -1237.11e-1, "b": "csdf", "c": what}
 print input
 
 split input into charArray
@@ -55,8 +52,8 @@ parseString takes nothing
 	give out back
 end
 
-contains takes array, thing
-	split array into ohmy
+contains takes str, thing
+	split str into ohmy
 	jndex is 0
 	let len be ohmy + 0
 	while jndex < len
@@ -136,7 +133,6 @@ parseNumber takes nothing
 		if powNegative
 			let powPart be powPart * -1
 		end
-		print powPart
 		let multiplier be pow taking 10, powPart
 		let number be number * multiplier
 	end
@@ -146,18 +142,52 @@ parseNumber takes nothing
 	number
 end
 
+alpha is "abcdefghijklmnopqrstuvwxyz"
+
+parseKeyword takes nothing
+    let out be ""
+    while contains taking alpha, input at index
+        out is with input at index
+        index is with 1
+    end
+    give out back
+end
+
+let whitespace be " "
+let whiespace be with newline
 index is 0
 basics says {}:,
+print charArray
 while index < charArray
 	if contains taking basics, input at index
 		rock tokens with input at index
-	end
-	if input at index is quote
-		rock tokens with parseString taking ""
-	end
-	if isNumber taking input at index
-		rock tokens with parseNumber taking ""
-	end
+	else
+	    if input at index is quote
+	        rock tokens with parseString taking ""
+	    else
+            if isNumber taking input at input at index or input at index is "-"
+                rock tokens with parseNumber taking ""
+            else
+                if not contains taking whitespace, input at index
+                    let key be parseKeyword taking ""
+                    if input is "null"
+                        rock tokens with null
+                    else
+                        if key is "true"
+                            rock tokens with true
+                        else
+                            if key is "false"
+                                rock tokens with false
+                            else
+                                write "'" + key
+                                print "' is not a recognized keyword"
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
 	index is with 1
 end
 
