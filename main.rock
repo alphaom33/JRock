@@ -161,31 +161,21 @@ print charArray
 while index < charArray
 	if contains taking basics, input at index
 		rock tokens with input at index
-	else
-	    if input at index is quote
-	        rock tokens with parseString taking ""
-	    else
-            if isNumber taking input at input at index or input at index is "-"
-                rock tokens with parseNumber taking ""
-            else
-                if not contains taking whitespace, input at index
-                    let key be parseKeyword taking ""
-                    if input is "null"
-                        rock tokens with null
-                    else
-                        if key is "true"
-                            rock tokens with true
-                        else
-                            if key is "false"
-                                rock tokens with false
-                            else
-                                write "'" + key
-                                print "' is not a recognized keyword"
-                            end
-                        end
-                    end
-                end
-            end
+	else if input at index is quote
+	    rock tokens with parseString taking ""
+	else if isNumber taking input at input at index or input at index is "-"
+        rock tokens with parseNumber taking ""
+    else if not contains taking whitespace, input at index
+        let key be parseKeyword taking ""
+        if input is "null"
+          rock tokens with null
+        else if key is "true"
+          rock tokens with true
+        else if key is "false"
+            rock tokens with false
+        else
+            write "'" + key
+            print "' is not a recognized keyword"
         end
     end
 	index is with 1
