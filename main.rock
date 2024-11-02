@@ -1,8 +1,7 @@
 quote says "
 newline is "
 "
-
-input says {"a": -1237.11e-1, "b": "csdf", "c": what}
+input says {"a": "c", "b": null}
 print input
 
 split input into charArray
@@ -19,6 +18,16 @@ consume takes toTake
 	end
 	index is with 1
 	give back true
+end
+
+consumeToken takes token, type
+	if token at "type" isn't type
+		print "Expected '" + type + "'"
+		index is with 1
+		give back false
+	end
+	index is with 1
+	give tokens at index - 1 back
 end
 
 eat takes toTake
@@ -44,12 +53,12 @@ parseString takes nothing
 	while not why taking quote
 		index is with 1
 	end
-	out is ""
+	str is ""
 	while start < index
-		out is with input at start
+		str is with input at start
 		start is with 1
 	end
-	give out back
+	give giveThing taking "string", str back
 end
 
 contains takes str, thing
@@ -66,7 +75,7 @@ contains takes str, thing
 end
 
 isNumber takes thing
-	numbers is "1234567890.-"
+	numbers is "1234567890"
 	contains taking numbers, thing
 end
 
@@ -89,7 +98,7 @@ parseNumber takes nothing
 		index is with 1
 	end
 	let iPart be ""
-	while not why taking "." and isNumber taking input at index
+	while isNumber taking input at index
 		iPart is with input at index
 		index is with 1
 	end
@@ -116,6 +125,7 @@ parseNumber takes nothing
 			index is with 1
 		end
 	end
+	index is with -1
 	number is 0
 	if iPart
 		cast iPart with 10
@@ -139,7 +149,7 @@ parseNumber takes nothing
 	if isNegative
 		let number be number * -1
 	end
-	number
+	give giveThing taking "number", number back
 end
 
 alpha is "abcdefghijklmnopqrstuvwxyz"
@@ -150,35 +160,109 @@ parseKeyword takes nothing
         out is with input at index
         index is with 1
     end
+	index is with -1
     give out back
+end
+
+giveThing takes type, value
+	let out at "type" be type
+	let out at "value" be value
+	give out back
 end
 
 let whitespace be " "
 let whiespace be with newline
 index is 0
-basics says {}:,
+basics says {}:,[]
 print charArray
 while index < charArray
 	if contains taking basics, input at index
-		rock tokens with input at index
+		rock tokens with giveThing taking input at index, input at index
 	else if input at index is quote
 	    rock tokens with parseString taking ""
-	else if isNumber taking input at input at index or input at index is "-"
+	else if isNumber taking input at index or input at index is "-"
         rock tokens with parseNumber taking ""
     else if not contains taking whitespace, input at index
         let key be parseKeyword taking ""
-        if input is "null"
-          rock tokens with null
+        if key is "null"
+            rock tokens with giveThing taking "null", null
         else if key is "true"
-          rock tokens with true
+		    rock tokens with giveThing taking "boolean", true
         else if key is "false"
-            rock tokens with false
-        else
-            write "'" + key
+			rock tokens with giveThing taking "boolean", false
+		else
             print "' is not a recognized keyword"
-        end
+			write "'" + key
     end
+	end
 	index is with 1
 end
 
 print tokens
+
+parseArray takes nothing
+	consumeToken taking tokens at index, "["
+	let startDex be 0
+	while index < tokens
+		let tmp be tokens at index
+		let array at startDex be doValue taking tokens at index
+		let tmp be tokens at index
+		if tmp at "type" is ","
+			consumeToken taking tokens at index, ","
+		else if tmp at "type" is "]"
+			consumeToken taking tokens at index, "]"
+			break
+		else
+			print "what"
+		end
+		startDex is with 1
+	end
+	give array back
+end
+
+doValue takes token
+	if token at "type" is "string" or token at "type" is "number"
+		let value be consumeToken taking tokens at index, token at "type"
+		give value at "value" back
+	else if token at "type" is "boolean"
+		index is with 1
+		if token at "value" is "true"
+			give true back
+		else 
+			give false back
+		end
+	else if token at "type" is "null"
+		index is with 1
+		give nothing back
+	else if token at "type" is "{"
+		consumeToken taking token, "{"
+		give eatJSON taking "" back
+	else if token at "type" is "["
+		give parseArray taking "" back
+	end
+end
+
+print "". print "". print ""
+index is 0
+consumeToken taking tokens at index, "{"
+eatJSON takes nothing
+	while index < tokens
+		let key be consumeToken taking tokens at index, "string"
+		consumeToken taking tokens at index, ":"
+		let json at key at "value" be doValue taking tokens at index
+		let tmp be tokens at index
+		if tmp at "type" is ","
+			consumeToken taking tokens at index, ","
+		else if tmp at "type" is "}"
+			consumeToken taking tokens at index, "}"
+			break
+		else
+			toPrint says Expected ',' or '}'
+			print toPrint
+		end
+	end
+	give json back
+end
+let json be eatJSON taking ""
+
+print json
