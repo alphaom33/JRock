@@ -1,7 +1,7 @@
 quote says "
 newline is "
 "
-input says {"a": "c", "b": null}
+input says {"a": "c", "bsdf": "\ud801\udc37"}
 print input
 
 split input into charArray
@@ -47,18 +47,74 @@ eatWhite takes nothing
 	end
 end
 
-parseString takes nothing
-	consume taking quote
-	let start be index
-	while not why taking quote
+parseUnicodeEscape takes nothing
+	consume taking input at index, "u"
+	num is ""
+	let startDex be index
+	while index < startDex + 4
+		num is with input at index
 		index is with 1
 	end
+	give num back
+end
+
+escapeMap at quote is 34
+escapeMap at "\" is 92
+escapeMap at "/" is 47
+escapeMap at "n" is 10
+escapeMap at "b" is 8
+escapeMap at "f" is 12
+escapeMap at "r" is 13
+escapeMap at "t" is 9
+parseString takes nothing
+	consume taking quote
 	str is ""
-	while start < index
-		str is with input at start
-		start is with 1
+	while input at index isn't quote
+		if input at index is "\"
+			index is with 1
+			alloweds says /\"
+			if mapContains taking escapeMap, input at index
+				let ack be escapeMap at input at index
+				tmp is ""
+				rock tmp with ack
+				str is with tmp
+			else if input at index is "u"
+				let num be parseUnicodeEscape taking ""
+				cast num with 16
+				if input at index is "\" and input at index + 1 is "u"
+					index is with 1
+					let num2 be parseUnicodeEscape taking ""
+					cast num2 with 16
+					num is with -55296
+					num is times 1024
+					num2 is minus 56320
+					num is with num2
+					num is with 65536
+				end
+				index is with -1
+				tmp is ""
+				rock tmp with num
+				str is with tmp
+			else
+				let tmp be input at index
+				print "Invalid character escape '" + tmp + "'"
+			end
+			index is with 1
+		else
+			str is with input at index
+			index is with 1
+		end
 	end
 	give giveThing taking "string", str back
+end
+
+mapContains takes map, thing
+	for val and key of map
+		if key is thing
+			give true back
+		end
+	end
+	give false back
 end
 
 contains takes str, thing
